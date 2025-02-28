@@ -49,7 +49,54 @@ let getAllUsers = () => {
     }
   });
 };
+
+
+let getUserInfoById = (userId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let user = await db.User.findOne({
+        where: {
+          id: userId
+        }
+      }, {
+        raw:true
+      })
+      if(!user) {
+        resolve({});
+      }
+      resolve(user);
+    } catch (e) {
+      reject(e);
+    }
+  })
+}
+let updateUserData = (data) => {
+  console.log('Data from servicee: ', data);
+  return new Promise(async (resolve, reject) => {
+    try {
+      let User = await db.User.findOne({
+        where: {
+          id: data.id
+        }
+      })
+      if(!User) {
+        resolve("User not found");
+        return;
+      }
+      User.firstName = data.firstName;
+      User.lastName = data.lastName;
+      User.address = data.address;
+      await User.save();
+      let allUsers = await db.User.findAll();
+      resolve(allUsers);
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
 module.exports = {
   creatNewUser: creatNewUser,
   getAllUsers: getAllUsers,
+  getUserInfoById, getUserInfoById,
+  updateUserData: updateUserData,
 };
